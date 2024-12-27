@@ -1,10 +1,16 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import PostItem from '../PostItem'
-import { RootState } from 'blogStore'
+import { RootState } from 'store'
+import { startEditingPost } from 'pages/blog.slice'
 
 export default function PostList() {
-  const getPostList = useSelector((state: RootState) => state.Myblog.postList)
-  console.log(getPostList)
+  const dispatch = useDispatch()
+  const getPostList = useSelector((state: RootState) => state.BLOG.postList)
+
+  const handleEditingPost = (id: string) => {
+    dispatch(startEditingPost(id))
+  }
+
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
       <div className='mx-auto max-w-screen-xl px-4 md:px-8'>
@@ -17,7 +23,7 @@ export default function PostList() {
         <div className='grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2 xl:gap-8'>
           {getPostList.map((item) => {
             return (
-              <PostItem post={item} key={item.id}></PostItem>
+              <PostItem onEditingPost={handleEditingPost} post={item} key={item.id}></PostItem>
             )
           })}
         </div>
