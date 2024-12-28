@@ -64,9 +64,7 @@ const blogSlice = createSlice({
         (state, action) => {
           console.log(current(state))
         }
-        
       )
-
   },
 })
 
