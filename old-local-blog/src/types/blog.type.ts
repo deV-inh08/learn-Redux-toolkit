@@ -5,5 +5,5 @@ export interface Post {
     id: string
     featuredImage: string
     published: boolean
-  }
+}
   
