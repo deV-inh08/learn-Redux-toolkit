@@ -1,14 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit"
-import blogReducer from "pages/blog.slice"
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "pages/blog/blog.slice";
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    "BLOG": blogReducer
+    'Blog': reducer
   }
 })
 
-// Type RootState and AppDispatch
 export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
-
-export default store
+export type AppDispatch = typeof store.dispatch 

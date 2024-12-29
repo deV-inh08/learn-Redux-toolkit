@@ -1,39 +1,28 @@
-import { Fragment, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Post } from "types/blog.type";
-import { addPost, finishEditingPost } from "pages/blog.slice";
-import { RootState } from "store";
-
-const FromDataType: Post = {
-  id: "",
-  description: "",
-  featuredImage: "",
-  publishDate: "",
-  title: "",
-  published: false,
-}
+import { useState } from "react"
+import { useDispatch } from "react-redux"
+import { Post } from "types/blog.type"
+import { addPost } from "pages/blog/blog.slice"
 
 export default function CreatePost() {
-  const [formData, setFormData] = useState<Post>(FromDataType)
+  const initialPost: Post = {
+    id: '',
+    description: '',
+    featuredImage: '',
+    publishDate: '',
+    published: false,
+    title: ''
+  }
   const dispatch = useDispatch()
-  const editPost = useSelector((state: RootState) => state.BLOG.editingPost)
+  const [form, setForm] = useState<Post>(initialPost)
 
-  useEffect(() => {
-    setFormData(editPost || FromDataType)
-  }, [editPost])
-
-  const handleAddPost = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (editPost) {
-      dispatch(finishEditingPost(formData))
-    } else {
-      dispatch(addPost(formData))
-      setFormData(FromDataType)
-    }
+    dispatch(addPost(form))
+    setForm(initialPost)
   }
 
   return (
-    <form onSubmit={handleAddPost}>
+    <form onSubmit={handleSubmit}>
       <div className='mb-6'>
         <label
           htmlFor='title'
@@ -46,9 +35,9 @@ export default function CreatePost() {
           id='title'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Title'
-
-          value={formData.title}
-          onChange={(e) => setFormData((pre) => ({ ...pre, title: e.target.value }))}
+          required
+          value={form.title}
+          onChange={(e) => {setForm((pre) => ({...pre, title: e.target.value}))}}
         />
       </div>
       <div className='mb-6'>
@@ -60,9 +49,9 @@ export default function CreatePost() {
           id='featuredImage'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Url image'
-
-          value={formData.featuredImage}
-          onChange={(e) => setFormData((pre) => ({ ...pre, featuredImage: e.target.value }))}
+          required
+          value={form.featuredImage}
+          onChange={(e) => {setForm((pre) => ({...pre, featuredImage: e.target.value}))}}
         />
       </div>
       <div className='mb-6'>
@@ -75,9 +64,9 @@ export default function CreatePost() {
             rows={3}
             className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
             placeholder='Your description...'
-
-            value={formData.description}
-            onChange={(e) => setFormData((pre) => ({ ...pre, description: e.target.value }))}
+            required
+            value={form.description}
+          onChange={(e) => {setForm((pre) => ({...pre, description: e.target.value}))}}
           />
         </div>
       </div>
@@ -90,9 +79,10 @@ export default function CreatePost() {
           id='publishDate'
           className='block w-56 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Title'
+          required
+          value={form.publishDate}
+          onChange={(e) => {setForm((pre) => ({...pre,publishDate: e.target.value}))}}
 
-          value={formData.publishDate}
-          onChange={(e) => setFormData((pre) => ({ ...pre, publishDate: e.target.value }))}
         />
       </div>
       <div className='mb-6 flex items-center'>
@@ -100,46 +90,40 @@ export default function CreatePost() {
           id='publish'
           type='checkbox'
           className='h-4 w-4 focus:ring-2 focus:ring-blue-500'
-          checked={formData.published}
-          onChange={(e) => setFormData((pre) => ({ ...pre, published: e.target.checked }))}
+          required
+          checked={form.published}
+          onChange={(e) => {setForm((pre) => ({...pre, published: e.target.checked}))}}
         />
         <label htmlFor='publish' className='ml-2 text-sm font-medium text-gray-900'>
           Publish
         </label>
       </div>
       <div>
-        <Fragment>
-          {editPost && (
-            <>
-              <button
-                className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-teal-300 to-lime-300 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-lime-200 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 dark:focus:ring-lime-800'
-              >
-                <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
-                  Update Post
-                </span>
-              </button>
-              <button
-                type='reset'
-                className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-red-100 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 dark:focus:ring-red-400'
-              >
-                <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
-                  Cancel
-                </span>
-              </button>
-            </>
-          )}
-
-          {!editPost && (
-            <button
-              className='group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 group-hover:from-purple-600 group-hover:to-blue-500 dark:text-white dark:focus:ring-blue-800'
-              type='submit'
-            >
-              <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
-                Publish Post
-              </span>
-            </button>
-          )}
-        </Fragment>
+        <>
+          <button
+            className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-teal-300 to-lime-300 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-lime-200 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 dark:focus:ring-lime-800'
+          >
+            <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
+              Update Post
+            </span>
+          </button>
+          <button
+            type='reset'
+            className='group relative mb-2 mr-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 p-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-red-100 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 dark:focus:ring-red-400'
+          >
+            <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
+              Cancel
+            </span>
+          </button>
+          <button
+            className='group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 group-hover:from-purple-600 group-hover:to-blue-500 dark:text-white dark:focus:ring-blue-800'
+            type='submit'
+          >
+            <span className='relative rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900'>
+              Publish Post
+            </span>
+          </button>
+        </>
       </div>
     </form>
   )
