@@ -3,6 +3,7 @@ import { Post } from 'types/blog.type'
 import { RootState, useAppDispatch } from 'store'
 import { addPost, updatePost } from 'pages/Blog/blog.slice'
 import { useSelector } from 'react-redux'
+import { unwrapResult } from '@reduxjs/toolkit'
 
 interface ErrorForm {
   publishDate: string
@@ -21,7 +22,7 @@ export default function CreatePost() {
   const [formData, setFormData] = useState<Post>(initialState)
   const [errorForm, setErrorForm] = useState<null | ErrorForm>(null)
   const dispatch = useAppDispatch()
-  const editPost = useSelector((state: RootState) => state.editPost);
+  const editPost = useSelector((state: RootState) => state.editPost)
 
   useEffect(() => {
     if (editPost) {
@@ -29,15 +30,31 @@ export default function CreatePost() {
     }
   }, [editPost])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (editPost) {
       dispatch(updatePost(formData))
+        // Catch Error
+        .unwrap()
+        .then(() => {
+          setFormData(initialState)
+          if (errorForm) {
+            setErrorForm(null)
+          }
+        })
+        .catch((err) => {
+          setErrorForm(err.error)
+        })
     } else {
-      const formWithID = {...formData, id: new Date().toISOString()}
-      dispatch(addPost(formWithID))
+     try {
+      const formWithID = { ...formData, id: new Date().toISOString() }
+      const res = await dispatch(addPost(formWithID))
+      unwrapResult(res)
+      setFormData(initialState)
+     } catch (error: any) {
+      setErrorForm(error.error)
+     }
     }
-    setFormData(initialState)
   }
 
   return (
@@ -101,8 +118,8 @@ export default function CreatePost() {
           type='datetime-local'
           id='publishDate'
           className={`block w-56 rounded-lg border  p-2.5 text-sm  focus:outline-none  ${errorForm?.publishDate
-              ? 'border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
+            ? 'border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500'
+            : 'border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
             }`}
           placeholder='Title'
           required

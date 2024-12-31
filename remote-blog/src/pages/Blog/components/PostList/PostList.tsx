@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import PostItem from '../PostItem'
-import http from 'utils/http'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState, useAppDispatch } from 'store'
-import { getPostList, getPostListSuccess } from 'pages/Blog/blog.slice'
+import { getPostList } from 'pages/Blog/blog.slice'
+import SkeletonPost from '../SkeletonPost'
+// import SkeletonPost from '../SkeletonPost'
 
 // Gọi API trong useEffect()
 // Nếu gọi thành công thì dispatch action type: "blog/getPostListSuccess"
@@ -15,8 +16,8 @@ export default function PostList() {
 
   // const dispatch = useDispatch()
   const dispatch = useAppDispatch()
-  const postList = useSelector((state: RootState) => state.postList);
-
+  const postList = useSelector((state: RootState) => state.postList)
+  const loading = useSelector((state: RootState) => state.loading)
 
   // cach 1
   // useEffect(() => {
@@ -40,8 +41,6 @@ export default function PostList() {
   //     }
   // })
 
-
-
   useEffect(() => {
     const promise = dispatch(getPostList())
     return () => {
@@ -59,11 +58,18 @@ export default function PostList() {
           </p>
         </div>
         <div className='grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2 xl:gap-8'>
-          {postList && postList.map((post, index) => {
+          {loading && (
+            <Fragment>
+              <SkeletonPost></SkeletonPost>
+              <SkeletonPost></SkeletonPost>
+            </Fragment>
+          )}
+          {!loading && postList && postList.map((post, index) => {
             return (
              <PostItem key={index} post={post}></PostItem>          
             )
           })}
+         
         </div>
       </div>
     </div>
