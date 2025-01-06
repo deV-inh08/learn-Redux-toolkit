@@ -1,10 +1,25 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Post } from 'types/blog.type'
 
+const initiaState: Omit<Post, 'id'> = {
+  description: '',
+  featuredImage: '',
+  publishDate: '',
+  title: '',
+  published: false
+}
+
 
 export default function CreatePost() {
+  const [formData, setFormData] = useState<Omit<Post, 'id'>>(initiaState)
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formData)
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className='mb-6'>
         <label
           htmlFor='title'
@@ -17,7 +32,7 @@ export default function CreatePost() {
           id='title'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Title'
-         
+          onChange = {(e) => (setFormData(pre => ({...pre, title: e.target.value})))}
         />
       </div>
       <div className='mb-6'>
@@ -29,7 +44,7 @@ export default function CreatePost() {
           id='featuredImage'
           className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
           placeholder='Url image'
-          
+          onChange = {(e) => (setFormData(pre => ({...pre, featuredImage: e.target.value})))}
         />
       </div>
       <div className='mb-6'>
@@ -42,7 +57,7 @@ export default function CreatePost() {
             rows={3}
             className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500'
             placeholder='Your description...'
-            
+            onChange = {(e) => (setFormData(pre => ({...pre, description: e.target.value})))}
           />
         </div>
       </div>
@@ -63,6 +78,7 @@ export default function CreatePost() {
           //   }`}
           placeholder='Title'
           required
+          onChange = {(e) => (setFormData(pre => ({...pre, publishDate: e.target.value})))}
           
         />
         
@@ -71,7 +87,7 @@ export default function CreatePost() {
         <input
           id='publish'
           type='checkbox'
-          
+          onChange={(e) => (setFormData(pre => ({...pre, published: e.target.checked})))}
           className='h-4 w-4 focus:ring-2 focus:ring-blue-500'
         />
         <label htmlFor='publish' className='ml-2 text-sm font-medium text-gray-900'>
