@@ -1,5 +1,7 @@
-import { useGetPostQuery } from 'pages/Blog/blog.service'
+import { useDeletePostMutation, useGetPostsQuery } from 'pages/Blog/blog.service'
 import PostItem from '../PostItem'
+import { useDispatch } from 'react-redux'
+import { startEditPost } from 'pages/Blog/blog.slice'
 
 // Gọi API trong useEffect()
 // Nếu gọi thành công thì dispatch action type: "blog/getPostListSuccess"
@@ -8,9 +10,21 @@ import PostItem from '../PostItem'
 // xxxxx: Dispatch action type "blog/getPostList"
 
 export default function PostList() {
-  const { data, isLoading, isFetching } = useGetPostQuery()
+  const { data, isLoading, isFetching } = useGetPostsQuery()
   // isLoading: fetch lan dau
   // isFetch: update trang thai moi lan fetch
+  const dispatch = useDispatch();
+
+  const [deletePost] = useDeletePostMutation()
+
+  const startEdit = (id: string) => {
+    dispatch(startEditPost(id))
+  }
+
+  const handledeletePost = (id: string) => {
+    deletePost(id)
+  }
+
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
       <div className='mx-auto max-w-screen-xl px-4 md:px-8'>
@@ -24,11 +38,10 @@ export default function PostList() {
           <>
             {!isFetching && data && data.map((post) => {
               return (
-                <PostItem post={post}></PostItem>
+                <PostItem post={post} startEdit={startEdit} handledeletePost={handledeletePost}></PostItem>
               )
             })}
           </>
-         
         </div>
       </div>
     </div>

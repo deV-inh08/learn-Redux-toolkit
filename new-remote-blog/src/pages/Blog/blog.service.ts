@@ -12,7 +12,7 @@ export const blogApi = createApi({
     // mutation --> post, put, patch, delete
 
     // Generic type<responseData, argument>
-    getPost: build.query<Post[], void>({
+    getPosts: build.query<Post[], void>({
       query: () => 'posts', // not arguments
 
       providesTags(result) {
@@ -37,9 +37,35 @@ export const blogApi = createApi({
         }
       },
       invalidatesTags: (result, error, body) => [{ type: 'Posts', id: 'LIST' }]
+    }),
+
+    getPost: build.query<Post, string>({
+      query: (id) => `posts/${id}`
+    }),
+
+    updatePost: build.mutation<Post, { id: string, body: Post }>({
+      query(data) {
+        return {
+          url: `posts/${data.id}`,
+          method: 'PUT',
+          body: data
+        }
+      },
+      // update local state
+      invalidatesTags: (result, error, body) => [{ type: 'Posts', id: 'LIST' }]
+    }),
+
+    deletePost: build.mutation<{}, string>({
+      query(id) {
+        return {
+          url: `posts/${id}`,
+          method: 'DELETE'
+        }
+      },
+      invalidatesTags: (result, error, id) => [{ type: 'Posts', id }]
     })
   })
 })
 
 
-export const { useGetPostQuery } = blogApi
+export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery, useUpdatePostMutation, useDeletePostMutation } = blogApi
